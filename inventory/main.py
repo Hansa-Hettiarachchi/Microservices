@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from redis_om import get_redis_connection
+from redis_om import get_redis_connection, HashModel
 
 app = FastAPI()
 redis = get_redis_connection(
@@ -9,11 +9,14 @@ redis = get_redis_connection(
     decode_responses=True,
 )
 
-class Product(Hashmodel):
+class Product(HashModel):
     name: str
     price: float
-    quantity: int 
+    quantity: int
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+    class Meta:
+        database = redis 
+
+@app.get("/products")
+def all():
+    return Product.all_pks()
