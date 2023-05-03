@@ -41,15 +41,15 @@ def get(pk: str):
 async def create(request: Request, background_tasks: BackgroundTasks):
     body = await request.json()
 
-    req = requests.get(f"http://localhost:8000/products/%s" %body['id'])
+    req = requests.get("http://localhost:8000/products/%s" % body['id'])
     product = req.json()
 
     order = Order(
         product_id=body['id'],
-        price=product['price'],
-        fee=product['price'] * 0.2,
-        total=product['price'] * 1.2,
         quantity=body['quantity'],
+        price=product['price'],
+        fee=product['price'] * 0.2 * body['quantity'],
+        total=product['price'] * body['quantity'] + product['price'] * 0.2 * body['quantity'],
         status='pending'
     )
     order.save()
@@ -59,7 +59,8 @@ async def create(request: Request, background_tasks: BackgroundTasks):
 
 
 def order_completed(order: Order):
-    time.sleep(4)
+    time.sleep(5)
     order.status = 'completed'
     order.save()
+    redis.xadd('order_completed', order.dict(), '*')
 

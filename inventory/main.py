@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8000"],
+    allow_origins=["http://localhost:8000"],
     allow_methods=["*"],
     allow_headers=["*"]
 )
@@ -37,7 +37,7 @@ def create(product: Product):
 def format(pk:str):
     product = Product.get(pk)
     return {
-        'id': pk,
+        'id': product.pk,
         'name': product.name,
         'price': product.price,
         'quantity': product.quantity
