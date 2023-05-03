@@ -9,7 +9,11 @@ redis = get_redis_connection(
     decode_responses=True,
 )
 
+class Product(Hashmodel):
+    name: str
+    price: float
+    quantity: int 
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
